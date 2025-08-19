@@ -1,0 +1,58 @@
+name: Java CI with Maven and Screenshots
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  schedule:
+    - cron: "30 0 * * *"  # Runs daily at 00:30 UTC (6:00 AM IST)
+  workflow_dispatch:        # Optional manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the repository
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Step 2: Set up Java
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    # Step 3: Cache Maven dependencies
+    - name: Cache Maven packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+
+    # Step 4: Build the project
+    - name: Build with Maven
+      run: mvn clean install -DskipTests
+
+    # Step 5: Run tests (Selenium + JUnit/TestNG)
+    - name: Run Tests
+      run: mvn test
+
+    # Step 6: Upload Test Reports
+    - name: Upload Test Reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-reports
+        path: target/surefire-reports/
+
+    # Step 7: Upload Screenshots
+    - name: Upload Screenshots
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: screenshots
+        path: test-output # Change this to your screenshot folder
