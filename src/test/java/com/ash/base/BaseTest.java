@@ -37,9 +37,10 @@ public class BaseTest extends BasePage{
             options.addArguments("--headless=new");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu");
+            options.addArguments("--window-size=1920,1080");
 
             WebDriver driver = new ChromeDriver(options);
-
 	        ExtentTest test = extent.createTest(method.getName());
 	        testThread.set(test);
 	    }
