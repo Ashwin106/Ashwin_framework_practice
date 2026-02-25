@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.AfterSuite;
@@ -32,7 +33,13 @@ public class BaseTest extends BasePage{
 
 	    @BeforeMethod
 	    public void setUp(Method method) {
-	        driver = new ChromeDriver();
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--headless=new");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+
+            WebDriver driver = new ChromeDriver(options);
+
 	        ExtentTest test = extent.createTest(method.getName());
 	        testThread.set(test);
 	    }
